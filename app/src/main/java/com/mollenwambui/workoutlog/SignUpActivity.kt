@@ -82,5 +82,10 @@ class SignUpActivity : AppCompatActivity() {
         if (confirmPassword.isBlank()){
             tilConfirmPassword.error="Confirm Password is required"
         }
+        var equals=etpassword==etConfirmPassword
+         if (etpassword !=etConfirmPassword){
+             tilConfirmPassword.error="Wrong password"
+         }
+
     }
 }
