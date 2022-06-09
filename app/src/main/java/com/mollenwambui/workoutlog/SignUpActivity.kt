@@ -3,10 +3,12 @@ package com.mollenwambui.workoutlog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Patterns
 import android.widget.Button
 import android.widget.TextView
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import java.util.regex.Pattern
 
 class SignUpActivity : AppCompatActivity() {
     lateinit var tvLogin: TextView
@@ -54,6 +56,7 @@ class SignUpActivity : AppCompatActivity() {
 
     fun validating() {
         var error = false
+      
         tilFirstName.error = null
         tilEmailSignup.error = null
         tilPassword.error = null
@@ -74,6 +77,11 @@ class SignUpActivity : AppCompatActivity() {
             tilEmailSignup.error="Email is required"
 
         }
+        if( !Patterns.EMAIL_ADDRESS.matcher(email).matches()){
+            tilEmailSignup.error="Not a valid email address"
+        }
+
+
         var password=etpassword.text.toString()
         if (password.isBlank()){
             tilPassword.error="Password is required"
@@ -83,9 +91,12 @@ class SignUpActivity : AppCompatActivity() {
             tilConfirmPassword.error="Confirm Password is required"
         }
         var equals=etpassword==etConfirmPassword
-         if (etpassword !=etConfirmPassword){
-             tilConfirmPassword.error="Wrong password"
-         }
+
+        if(password!=confirmPassword){
+            tilConfirmPassword.error="Wrong password"
+        }
 
     }
-}
+
+
+    }
