@@ -1,12 +1,16 @@
 package com.mollenwambui.workoutlog.ui
 
 import android.content.Intent
+import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Patterns
 import android.widget.Toast
-import com.mollenwambui.workoutlog.api.APIClient
+import androidx.activity.viewModels
+import androidx.lifecycle.Observer
+import com.mollenwambui.workoutlog.ViewModel.UserViewModel
 import com.mollenwambui.workoutlog.api.APIinterface
+import com.mollenwambui.workoutlog.api.ApiClient
 import com.mollenwambui.workoutlog.databinding.ActivitySignUpBinding
 import com.mollenwambui.workoutlog.models.RegisterRequest
 import com.mollenwambui.workoutlog.models.RegisterResponse
@@ -17,12 +21,30 @@ import java.util.regex.Pattern
 
 class SignUpActivity : AppCompatActivity() {
    lateinit var binding:ActivitySignUpBinding
+    lateinit var sharedprefs: SharedPreferences
+    val userViewModel: UserViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding=ActivitySignUpBinding.inflate(layoutInflater)
         setContentView(binding.root)
         viewCast()
+        sharedprefs=getSharedPreferences("WORKOUTLOG_PREFS", MODE_PRIVATE)
     }
+
+    override fun onResume() {
+        super.onResume()
+        userViewModel.registerResponseLiveData.observe(this, Observer {
+            registerResponcse ->
+            Toast.makeText(baseContext,registerResponcse?.message,Toast.LENGTH_LONG)
+            startActivity(Intent(baseContext, LoginActivity::class.java))
+        })
+        userViewModel.errorLiveDatas.observe(this, Observer {
+            errorMessage->
+            Toast.makeText(baseContext,errorMessage,Toast.LENGTH_LONG).show()
+        })
+    }
+
+
 
     fun viewCast() {
 
@@ -32,7 +54,8 @@ class SignUpActivity : AppCompatActivity() {
 
 
         }
-       binding.btnSignUp.setOnClickListener { validating() }
+       binding.btnSignUp.setOnClickListener { validating()
+           }
     }
 
     fun validating() {
@@ -41,9 +64,9 @@ class SignUpActivity : AppCompatActivity() {
         binding.tilFirstName.error = null
         binding.tilEmailSignup.error = null
         binding.tilPassword.error = null
-        binding.tilConfirmPassword.error = null
+        binding.tilConfirmpassword.error = null
         binding.tilLastName.error = null
-        var firstname =binding.etFirstName.text.toString()
+        var firstname =binding.etName.text.toString()
         error=true
         if (firstname.isBlank()) {
             binding.tilFirstName.error = "Firstname  is required"
@@ -55,7 +78,7 @@ class SignUpActivity : AppCompatActivity() {
             binding.tilLastName.error="Lastname is required"
 
         }
-        var email=binding.etEmail2.text.toString()
+        var email=binding.etEmail.text.toString()
         error=true
         if (email.isBlank()){
             binding.tilEmailSignup.error="Email is required"
@@ -66,61 +89,34 @@ class SignUpActivity : AppCompatActivity() {
         }
 
 
-        var password=binding.etpassword.text.toString()
+        var password=binding.etPassword.text.toString()
         error=true
         if (password.isBlank()){
            binding.tilPassword.error="Password is required"
         }
-        var phonenumber=binding.etpassword.text.toString()
+        var phonenumber=binding.etPhoneNumber.text.toString()
         error=true
         if (password.isBlank()){
-            binding.tilPassword.error="Password is required"
+            binding.tilPhone.error="Password is required"
         }
-        var confirmPassword=binding.etConfirmPassword.text.toString()
+        var confirmPassword=binding.etConfirmpassword.text.toString()
         error=true
         if (confirmPassword.isBlank()){
-            binding.tilConfirmPassword.error="Confirm Password is required"
+            binding.tilConfirmpassword.error="Confirm Password is required"
         }
-        var equals=binding.etpassword==binding.etConfirmPassword
+        var equals=binding.etPassword==binding.etConfirmpassword
 
         if(password!=confirmPassword){
-            binding.tilConfirmPassword.error="Wrong password"
+            binding.tilConfirmpassword.error="Wrong password"
         }
         if(!error){
             var registerRequest=RegisterRequest(firstname,lastname,phonenumber,email,password)
-            makeRegisterRequest(registerRequest)
+            userViewModel.registerUser(registerRequest)
 
         }
 
     }
 
-    fun makeRegisterRequest(registerRequest: RegisterRequest){
-        val apiClient=APIClient.ApiClient.buildApiClient(APIinterface::class.java)
-        val request=apiClient.registerUser(registerRequest)
 
-        request.enqueue(object :Callback<RegisterResponse>{
-            override fun onResponse(
-                call: Call<RegisterResponse>,
-                response: Response<RegisterResponse>
-            ) {
-                if (response.isSuccessful){
-                    Toast.makeText(baseContext,response.body()?.message,Toast.LENGTH_LONG)
-                    //navigate to login
-
-
-
-                }
-                else{
-                    var error=response.errorBody()?.string()
-                    Toast.makeText(baseContext,error,Toast.LENGTH_LONG).show()
-                }
-
-            }
-
-            override fun onFailure(call: Call<RegisterResponse>, t: Throwable) {
-              Toast.makeText(baseContext,t.message,Toast.LENGTH_LONG).show()
-            }
-
-        })
     }
-    }
+

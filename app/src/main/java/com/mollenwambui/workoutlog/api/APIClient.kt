@@ -3,7 +3,7 @@ package com.mollenwambui.workoutlog.api
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-class APIClient {
+
     object ApiClient {
         var retrofit = Retrofit.Builder()
             .baseUrl("http://192.81.215.35/")
@@ -13,4 +13,3 @@ class APIClient {
             return retrofit.create(apiInterface)
         }
     }
-}
