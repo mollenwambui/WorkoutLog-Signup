@@ -35,7 +35,7 @@ class UserViewModel :ViewModel(){
     }
     fun registerUser(registerRequest: RegisterRequest){
             viewModelScope.launch {
-                val response = userRepository.makeUserRequest(registerRequest)
+                val response = userRepository.registerUsers(registerRequest)
                 if (response.isSuccessful){
                     registerResponseLiveData.postValue(response.body())
                 }
@@ -49,4 +49,4 @@ class UserViewModel :ViewModel(){
 
 
 
-}
+

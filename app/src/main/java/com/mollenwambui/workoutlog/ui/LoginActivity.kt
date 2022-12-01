@@ -22,6 +22,7 @@ class LoginActivity : AppCompatActivity() {
     lateinit var binding:ActivityLoginBinding
     lateinit var sharedprefs:SharedPreferences
     val userViewModel:UserViewModel by viewModels()
+    lateinit var sharedprefss:SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,6 +30,7 @@ class LoginActivity : AppCompatActivity() {
         setContentView(binding.root)
         castView()
         sharedprefs=getSharedPreferences("WORKOUTLOG_PREFS", MODE_PRIVATE)
+        sharedprefss=getSharedPreferences("WORKOUTLOG_PREFS", MODE_PRIVATE)
     }
 
     override fun onResume() {
@@ -76,6 +78,7 @@ class LoginActivity : AppCompatActivity() {
 
     fun saveLoginDetails(LoginResponse:LoginResponse){
         val editor=sharedprefs.edit()
+        val token="Bearer ${LoginResponse.accessToken}"
         editor.putString("ACCESS_TOKEN",LoginResponse.accessToken)
         editor.putString("USER_ID",LoginResponse.userId)
         editor.putString("PROFILE_ID",LoginResponse.profileId)
